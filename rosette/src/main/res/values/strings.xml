@@ -2,7 +2,10 @@
 <resources>
 
     <string name="app_name">Rosette</string>
-    <string name="dummy_button">BUTTON</string>
+    <string name="launch_button">BUTTON</string>
     <string name="dummy_content">ROSETTE</string>
+
+    <string name="gl_activity.label">GLTEST</string>
+
 
 </resources>

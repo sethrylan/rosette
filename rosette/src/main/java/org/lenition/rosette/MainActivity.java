@@ -4,6 +4,7 @@ import org.lenition.rosette.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -111,7 +112,9 @@ public class MainActivity extends Activity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.launch_button).setOnTouchListener(mDelayHideTouchListener);
+
+        findViewById(R.id.launch_button).setOnClickListener(launchButtonListener);
     }
 
     @Override
@@ -124,6 +127,12 @@ public class MainActivity extends Activity {
         delayedHide(100);
     }
 
+    private View.OnClickListener launchButtonListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            Intent intent = new Intent(getApplicationContext(), OpenGLES20.class);
+            startActivity(intent);
+        }
+    };
 
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
