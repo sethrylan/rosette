@@ -6,6 +6,7 @@
     <string name="dummy_content">ROSETTE</string>
 
     <string name="gl_activity.label">GLTEST</string>
+    <string name="launch_ball_button">Ball Demo</string>
 
 
 </resources>

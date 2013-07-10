@@ -113,8 +113,12 @@ public class MainActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.launch_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.launch_ball_button).setOnTouchListener(mDelayHideTouchListener);
+
 
         findViewById(R.id.launch_button).setOnClickListener(launchButtonListener);
+        findViewById(R.id.launch_ball_button).setOnClickListener(launchBallButtonListener);
+
     }
 
     @Override
@@ -129,7 +133,14 @@ public class MainActivity extends Activity {
 
     private View.OnClickListener launchButtonListener = new View.OnClickListener() {
         public void onClick(View v) {
-            Intent intent = new Intent(getApplicationContext(), OpenGLES20.class);
+            Intent intent = new Intent(getApplicationContext(), OpenGLES20Activity.class);
+            startActivity(intent);
+        }
+    };
+
+    private View.OnClickListener launchBallButtonListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            Intent intent = new Intent(getApplicationContext(), BouncingBallActivity.class);
             startActivity(intent);
         }
     };

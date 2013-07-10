@@ -24,7 +24,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="org.lenition.rosette.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:theme="@style/FullscreenTheme" >
@@ -34,7 +34,13 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="org.lenition.rosette.OpenGLES20"
+                android:name=".OpenGLES20Activity"
+                android:configChanges="orientation|keyboardHidden|screenSize"
+                android:label="@string/gl_activity.label"
+                android:theme="@style/FullscreenTheme" >
+        </activity>
+        <activity
+                android:name=".BouncingBallActivity"
                 android:configChanges="orientation|keyboardHidden|screenSize"
                 android:label="@string/gl_activity.label"
                 android:theme="@style/FullscreenTheme" >
