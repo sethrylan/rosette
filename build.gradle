@@ -1,1 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+apply plugin: 'java-base'
+subprojects {
+    buildscript {
+        repositories {
+            mavenCentral()
+        }
+//        apply from: rootProject.file('gradle/buildscript.gradle'), to: buildscript
+    }
+
+    repositories { 
+        mavenCentral()
+    }
+}
+
+//apply from: rootProject.file('gradle/check.gradle')
+

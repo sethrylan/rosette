@@ -1,11 +1,9 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.4'
     }
 }
+
 apply plugin: 'android'
 
 dependencies {
@@ -21,7 +19,6 @@ android {
         targetSdkVersion 16
     }
 }
-
 
 task configureDebug << {  jar.classifier = "debug"  }
 
