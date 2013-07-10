@@ -1,18 +1,26 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-apply plugin: 'java-base'
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/groups/public"}  // for gradle-release plugin
+    }
+    dependencies {
+        classpath 'com.github.townsfolk:gradle-release:1.2'
+    }
+//    apply from: rootProject.file('gradle/buildscript.gradle'), to: buildscript
+}
+
 subprojects {
     buildscript {
         repositories {
             mavenCentral()
         }
-//        apply from: rootProject.file('gradle/buildscript.gradle'), to: buildscript
-    }
-
-    repositories { 
-        mavenCentral()
     }
 }
 
+apply plugin: 'release'
 //apply from: rootProject.file('gradle/check.gradle')
+//apply from: rootProject.file('gradle/license.gradle')
+
 
