@@ -1,11 +1,11 @@
 buildscript {
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.4'
+        classpath 'com.android.tools.build:gradle:0.4.3'
     }
 }
 
 apply plugin: 'android'
-//apply plugin: 'findbugs'
+apply from : "$rootDir/gradle/checkstyle.gradle"
 
 dependencies {
     compile files('libs/android-support-v4.jar')
@@ -19,15 +19,11 @@ android {
         minSdkVersion 12
         targetSdkVersion 16
     }
-}
 
-//findbugs {
-//    toolVersion = "2.0.1"
-//    reportsDir = file("$project.buildDir/findbugsReports")
-//    effort = "max"
-//    reportLevel = "high"
-//    ignoreFailures = true
-//}
+    sourceSets {
+        main.setRoot('src/main')
+    }
+}
 
 task configureDebug << {  jar.classifier = "debug"  }
 

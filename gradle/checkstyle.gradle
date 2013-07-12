@@ -1,0 +1,48 @@
+configurations {
+    codequality
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    codequality 'com.puppycrawl.tools:checkstyle:5.6'
+}
+
+task checkstyle << {
+    new File("$buildDir/reports/checkstyle").mkdirs()
+    ant.taskdef(name: 'checkstyle', classname: 'com.puppycrawl.tools.checkstyle.CheckStyleTask', classpath: configurations.codequality.asPath)
+    // see also, maxWarnings and failureProperty arguments
+    ant.checkstyle(config: "$rootDir/config/checkstyle/checkstyle.xml", failOnViolation: checkstyleFailOnError) {
+        fileset(dir: 'src/main/java')
+        formatter(type: 'xml', toFile: "$buildDir/reports/checkstyle/checkstyle.xml")
+    }
+}
+
+task checkstyleReport << {
+    description = 'Applies XML stylesheet to generated checkstyle*.xml files.'
+    if (file("$buildDir/reports/checkstyle/checkstyle.xml").exists()) {
+        ant.xslt(in: "$buildDir/reports/checkstyle/checkstyle.xml",
+                style:"$rootDir/config/checkstyle/checkstyle-noframes-sorted.xsl",
+                out:"$buildDir/reports/checkstyle/checkstyle.html"
+        )
+    }
+
+}
+
+gradle.taskGraph.afterTask {Task task, TaskState state ->
+    if(!checkstyleFailOnError || state.failure) {
+        if (task.name in ['checkstyle']) {
+            checkstyleReport.execute()
+        }
+    }
+}
+
+check.dependsOn(checkstyle)
+
+
+// https://github.com/BeneStem/WicketCheesr/blob/daa74f0b7ca3ee0f47e1ab902a3c756553efa156/build.gradle
+// https://github.com/gradleware/oreilly-gradle-book-examples/blob/master/ant-customtaskuse/build.gradle
+// http://gradle.1045684.n5.nabble.com/Trying-to-use-Checkstyle-getting-TreeWalker-error-td1435438.html
+

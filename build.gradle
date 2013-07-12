@@ -4,23 +4,18 @@ ext {
     githubProjectName = 'rosette'
     versions = [
     ]
+    checkstyleFailOnError = false
 }
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.github.townsfolk:gradle-release:1.2'
-    }
-}
-
-
-subprojects { project ->
+allprojects { project ->
     buildscript {
         repositories {
             mavenCentral()
         }
+    }
+
+    repositories {
+        mavenCentral()
     }
 }
 
