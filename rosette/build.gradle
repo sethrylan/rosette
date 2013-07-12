@@ -5,6 +5,7 @@ buildscript {
 }
 
 apply plugin: 'android'
+//apply plugin: 'findbugs'
 
 dependencies {
     compile files('libs/android-support-v4.jar')
@@ -19,6 +20,14 @@ android {
         targetSdkVersion 16
     }
 }
+
+//findbugs {
+//    toolVersion = "2.0.1"
+//    reportsDir = file("$project.buildDir/findbugsReports")
+//    effort = "max"
+//    reportLevel = "high"
+//    ignoreFailures = true
+//}
 
 task configureDebug << {  jar.classifier = "debug"  }
 

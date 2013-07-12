@@ -1,17 +1,22 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+ext {
+    githubProjectName = 'rosette'
+    versions = [
+    ]
+}
+
 buildscript {
     repositories {
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/groups/public"}  // for gradle-release plugin
     }
     dependencies {
         classpath 'com.github.townsfolk:gradle-release:1.2'
     }
-//    apply from: rootProject.file('gradle/buildscript.gradle'), to: buildscript
 }
 
-subprojects {
+
+subprojects { project ->
     buildscript {
         repositories {
             mavenCentral()
@@ -19,8 +24,6 @@ subprojects {
     }
 }
 
-apply plugin: 'release'
-//apply from: rootProject.file('gradle/check.gradle')
-//apply from: rootProject.file('gradle/license.gradle')
-
-
+task createWrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
