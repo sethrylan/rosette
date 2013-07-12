@@ -9,12 +9,13 @@ import junit.framework.Assert;
 
 import org.lenition.rosette.MainActivity;
 
-public class TestMainActivity extends ActivityInstrumentationTestCase2<MainActivity> {
+@SmallTest
+public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
-    private static final String TAG = "TestMainActivity";
+    private static final String TAG = "MainActivityTest";
     private MainActivity mAct;
 
-    public TestMainActivity() {
+    public MainActivityTest() {
         super(MainActivity.class);
     }
 
@@ -35,7 +36,6 @@ public class TestMainActivity extends ActivityInstrumentationTestCase2<MainActiv
         super.tearDown();
     }
 
-    @SmallTest
     public void test() {
         Assert.assertNotNull(mAct);
         Assert.assertEquals("Rosette", mAct.getTitle());
