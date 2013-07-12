@@ -13,9 +13,21 @@ allprojects { project ->
             mavenCentral()
         }
     }
-
     repositories {
         mavenCentral()
+    }
+}
+
+subprojects {
+    task configureDebug << {  jar.classifier = "debug"  }
+    task configureRelease << {  proguard.enabled = true  }
+
+    afterEvaluate { project ->
+        task sourcesJar(type: Jar, dependsOn:assemble) {
+            from android.sourceSets.main.allSource
+            classifier 'sources'
+            extension 'jar'
+        }
     }
 }
 

@@ -20,11 +20,7 @@ android {
         targetSdkVersion 16
     }
 
-    sourceSets {
-        main.setRoot('src/main')
-    }
+//    sourceSets {
+//        main.setRoot('src/main')
+//    }
 }
-
-task configureDebug << {  jar.classifier = "debug"  }
-
-task configureRelease << {  proguard.enabled = true  }
