@@ -1,3 +1,4 @@
+
 configurations {
     codequality
 }
@@ -14,8 +15,18 @@ task checkstyle << {
     new File("$buildDir/reports/checkstyle").mkdirs()
     ant.taskdef(name: 'checkstyle', classname: 'com.puppycrawl.tools.checkstyle.CheckStyleTask', classpath: configurations.codequality.asPath)
     // see also, maxWarnings and failureProperty arguments
+
     ant.checkstyle(config: "$rootDir/config/checkstyle/checkstyle.xml", failOnViolation: checkFailOnError) {
-        fileset(dir: 'src/main/java')
+        fileset(dir: projectDir.getPath()) {
+            android.sourceSets.each { sourceSet ->
+                sourceSet.java.each { file ->
+                    include(name: project.relativePath(file))
+                }
+            }
+        }
+
+        // uncomment to include console output
+        //formatter(type: 'plain', useFile: false)
         formatter(type: 'xml', toFile: "$buildDir/reports/checkstyle/checkstyle.xml")
     }
 }
