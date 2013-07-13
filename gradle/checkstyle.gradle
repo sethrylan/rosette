@@ -14,7 +14,7 @@ task checkstyle << {
     new File("$buildDir/reports/checkstyle").mkdirs()
     ant.taskdef(name: 'checkstyle', classname: 'com.puppycrawl.tools.checkstyle.CheckStyleTask', classpath: configurations.codequality.asPath)
     // see also, maxWarnings and failureProperty arguments
-    ant.checkstyle(config: "$rootDir/config/checkstyle/checkstyle.xml", failOnViolation: checkstyleFailOnError) {
+    ant.checkstyle(config: "$rootDir/config/checkstyle/checkstyle.xml", failOnViolation: checkFailOnError) {
         fileset(dir: 'src/main/java')
         formatter(type: 'xml', toFile: "$buildDir/reports/checkstyle/checkstyle.xml")
     }
@@ -28,11 +28,10 @@ task checkstyleReport << {
                 out:"$buildDir/reports/checkstyle/checkstyle.html"
         )
     }
-
 }
 
 gradle.taskGraph.afterTask {Task task, TaskState state ->
-    if(!checkstyleFailOnError || state.failure) {
+    if(!checkFailOnError || state.failure) {
         if (task.name in ['checkstyle']) {
             checkstyleReport.execute()
         }
