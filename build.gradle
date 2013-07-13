@@ -23,8 +23,8 @@ subprojects {
     task configureRelease << {  proguard.enabled = true  }
 
     afterEvaluate { project ->
-        task sourcesJar(type: Jar, dependsOn:assemble) {
-            from android.sourceSets.main.allSource
+        task sourcesJar(type: Jar, dependsOn: assemble) {
+            from android.sourceSets*.allSource
             classifier 'sources'
             extension 'jar'
         }
