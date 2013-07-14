@@ -1,5 +1,6 @@
 import org.gradle.api.internal.project.IsolatedAntBuilder
 
+
 configurations {
     codequality
 }
@@ -12,27 +13,10 @@ dependencies {
     codequality 'com.puppycrawl.tools:checkstyle:5.6'
 }
 
-gproj = project             // inside the ant block, 'project' resolves to the ant project, not the gradle one
-task checkstyle << {
-    new File("$buildDir/reports/checkstyle").mkdirs()
-    def antBuilder = services.get(IsolatedAntBuilder)
-    antBuilder.withClasspath(configurations.codequality).execute {
-        ant.taskdef(name: 'checkstyle', classname: 'com.puppycrawl.tools.checkstyle.CheckStyleTask')
-        // see also, maxWarnings and failureProperty arguments
-        ant.checkstyle(config: "$rootDir/config/checkstyle/checkstyle.xml", failOnViolation: checkFailOnError) {
-            fileset(dir: projectDir.getPath()) {
-                android.sourceSets.each { sourceSet ->
-                    sourceSet.java.each { file ->
-                        include(name: gproj.relativePath(file))
-                    }
-                }
-            }
-
-            // uncomment to include console output
-            //formatter(type: 'plain', useFile: false)
-            formatter(type: 'xml', toFile: "$buildDir/reports/checkstyle/checkstyle.xml")
-        }
-    }
+task checkstyle(type: AndroidCheckstyleTask) {
+    classpath = configurations.codequality
+    ignoreFailures = true
+    outputFile = file("$buildDir/reports/checkstyle/checkstyle.xml")
 }
 
 task checkstyleReport << {
@@ -55,8 +39,40 @@ gradle.taskGraph.afterTask {Task task, TaskState state ->
 
 check.dependsOn(checkstyle)
 
-
 // https://github.com/BeneStem/WicketCheesr/blob/daa74f0b7ca3ee0f47e1ab902a3c756553efa156/build.gradle
 // https://github.com/gradleware/oreilly-gradle-book-examples/blob/master/ant-customtaskuse/build.gradle
 // http://gradle.1045684.n5.nabble.com/Trying-to-use-Checkstyle-getting-TreeWalker-error-td1435438.html
 
+
+class AndroidCheckstyleTask extends DefaultTask {
+
+    @InputFile @Optional File configFile = new File("$project.rootDir/config/checkstyle/checkstyle.xml")
+    @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/checkstyle/checkstyle.xml")
+    @InputFiles FileCollection classpath
+    Boolean ignoreFailures = false
+
+    Project gproj = project
+
+    @TaskAction
+    def runCheckstyle() {
+        outputFile.parentFile.mkdirs()
+        def antBuilder = services.get(IsolatedAntBuilder)
+        antBuilder.withClasspath(classpath).execute {
+            ant.taskdef(name: 'checkstyle', classname: 'com.puppycrawl.tools.checkstyle.CheckStyleTask')
+            // see also, maxWarnings and failureProperty arguments
+            ant.checkstyle(config: configFile, failOnViolation: !ignoreFailures) {
+                fileset(dir: gproj.projectDir.getPath()) {
+                    gproj.android.sourceSets.each { sourceSet ->
+                        sourceSet.java.each { file ->
+                            include(name: gproj.relativePath(file))
+                        }
+                    }
+                }
+
+                // uncomment to include console output
+                //formatter(type: 'plain', useFile: false)
+                formatter(type: 'xml', toFile: outputFile)
+            }
+        }
+    }
+}
