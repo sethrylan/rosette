@@ -4,7 +4,6 @@ ext {
     githubProjectName = 'rosette'
     versions = [
     ]
-    checkFailOnError = false
 }
 
 allprojects { project ->
