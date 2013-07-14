@@ -30,6 +30,7 @@ class AndroidCheckstyleTask extends DefaultTask {
     @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/checkstyle/checkstyle.xml")
     @InputFiles FileCollection classpath
     Boolean ignoreFailures = false
+    Boolean console = false
 
     Project gproj = project
 
@@ -49,8 +50,9 @@ class AndroidCheckstyleTask extends DefaultTask {
                     }
                 }
 
-                // uncomment to include console output
-                //formatter(type: 'plain', useFile: false)
+                if (console) {
+                    formatter(type: 'plain', useFile: false)
+                }
                 formatter(type: 'xml', toFile: outputFile)
             }
 
