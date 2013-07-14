@@ -27,7 +27,7 @@ class AndroidCheckstyleTask extends DefaultTask {
     @InputFile @Optional File configFile = new File("$project.rootDir/config/checkstyle/checkstyle.xml")
     @InputFile @Optional File xslFile = new File("$project.rootDir/config/checkstyle/checkstyle-noframes-sorted.xsl")
     @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/checkstyle/checkstyle.xml")
-    FileCollection classpath = project.configurations.codequality
+    FileCollection checkstyleClasspath = project.configurations.codequality
     Boolean ignoreFailures = false
     Boolean showViolations = true
     Project gradleProject = project
@@ -36,7 +36,7 @@ class AndroidCheckstyleTask extends DefaultTask {
     def runCheckstyle() {
         outputFile.parentFile.mkdirs()
         def antBuilder = services.get(IsolatedAntBuilder)
-        antBuilder.withClasspath(classpath).execute {
+        antBuilder.withClasspath(checkstyleClasspath).execute {
             ant.taskdef(name: 'checkstyle', classname: 'com.puppycrawl.tools.checkstyle.CheckStyleTask')
             // see also, maxWarnings and failureProperty arguments
             ant.checkstyle(config: configFile, failOnViolation: !ignoreFailures) {
