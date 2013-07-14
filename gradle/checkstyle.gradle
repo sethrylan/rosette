@@ -12,14 +12,10 @@ dependencies {
 
 task checkstyle(type: AndroidCheckstyleTask) {
     classpath = configurations.codequality
-    ignoreFailures = true
+    ignoreFailures true
 }
 
 check.dependsOn(checkstyle)
-
-// https://github.com/BeneStem/WicketCheesr/blob/daa74f0b7ca3ee0f47e1ab902a3c756553efa156/build.gradle
-// https://github.com/gradleware/oreilly-gradle-book-examples/blob/master/ant-customtaskuse/build.gradle
-// http://gradle.1045684.n5.nabble.com/Trying-to-use-Checkstyle-getting-TreeWalker-error-td1435438.html
 
 import org.gradle.api.internal.project.IsolatedAntBuilder
 
@@ -31,8 +27,7 @@ class AndroidCheckstyleTask extends DefaultTask {
     @InputFiles FileCollection classpath
     Boolean ignoreFailures = false
     Boolean console = false
-
-    Project gproj = project
+    Project gradleProject = project
 
     @TaskAction
     def runCheckstyle() {
@@ -42,10 +37,10 @@ class AndroidCheckstyleTask extends DefaultTask {
             ant.taskdef(name: 'checkstyle', classname: 'com.puppycrawl.tools.checkstyle.CheckStyleTask')
             // see also, maxWarnings and failureProperty arguments
             ant.checkstyle(config: configFile, failOnViolation: !ignoreFailures) {
-                fileset(dir: gproj.projectDir.getPath()) {
-                    gproj.android.sourceSets.each { sourceSet ->
+                fileset(dir: gradleProject.projectDir.getPath()) {
+                    gradleProject.android.sourceSets.each { sourceSet ->
                         sourceSet.java.each { file ->
-                            include(name: gproj.relativePath(file))
+                            include(name: gradleProject.relativePath(file))
                         }
                     }
                 }
