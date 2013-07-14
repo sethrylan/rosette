@@ -1,3 +1,4 @@
+import org.gradle.api.internal.project.IsolatedAntBuilder
 
 configurations {
     codequality
@@ -11,23 +12,26 @@ dependencies {
     codequality 'com.puppycrawl.tools:checkstyle:5.6'
 }
 
+gproj = project             // inside the ant block, 'project' resolves to the ant project, not the gradle one
 task checkstyle << {
     new File("$buildDir/reports/checkstyle").mkdirs()
-    ant.taskdef(name: 'checkstyle', classname: 'com.puppycrawl.tools.checkstyle.CheckStyleTask', classpath: configurations.codequality.asPath)
-    // see also, maxWarnings and failureProperty arguments
-
-    ant.checkstyle(config: "$rootDir/config/checkstyle/checkstyle.xml", failOnViolation: checkFailOnError) {
-        fileset(dir: projectDir.getPath()) {
-            android.sourceSets.each { sourceSet ->
-                sourceSet.java.each { file ->
-                    include(name: project.relativePath(file))
+    def antBuilder = services.get(IsolatedAntBuilder)
+    antBuilder.withClasspath(configurations.codequality).execute {
+        ant.taskdef(name: 'checkstyle', classname: 'com.puppycrawl.tools.checkstyle.CheckStyleTask')
+        // see also, maxWarnings and failureProperty arguments
+        ant.checkstyle(config: "$rootDir/config/checkstyle/checkstyle.xml", failOnViolation: checkFailOnError) {
+            fileset(dir: projectDir.getPath()) {
+                android.sourceSets.each { sourceSet ->
+                    sourceSet.java.each { file ->
+                        include(name: gproj.relativePath(file))
+                    }
                 }
             }
-        }
 
-        // uncomment to include console output
-        //formatter(type: 'plain', useFile: false)
-        formatter(type: 'xml', toFile: "$buildDir/reports/checkstyle/checkstyle.xml")
+            // uncomment to include console output
+            //formatter(type: 'plain', useFile: false)
+            formatter(type: 'xml', toFile: "$buildDir/reports/checkstyle/checkstyle.xml")
+        }
     }
 }
 
