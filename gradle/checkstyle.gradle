@@ -23,7 +23,6 @@ check.dependsOn(checkstyle)
 import org.gradle.api.internal.project.IsolatedAntBuilder
 
 class AndroidCheckstyleTask extends DefaultTask {
-
     @InputFile @Optional File configFile = new File("$project.rootDir/config/checkstyle/checkstyle.xml")
     @InputFile @Optional File xslFile = new File("$project.rootDir/config/checkstyle/checkstyle-noframes-sorted.xsl")
     @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/checkstyle/checkstyle.xml")
