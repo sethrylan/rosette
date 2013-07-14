@@ -1,6 +1,3 @@
-import org.gradle.api.internal.project.IsolatedAntBuilder
-
-
 configurations {
     codequality
 }
@@ -16,25 +13,6 @@ dependencies {
 task checkstyle(type: AndroidCheckstyleTask) {
     classpath = configurations.codequality
     ignoreFailures = true
-    outputFile = file("$buildDir/reports/checkstyle/checkstyle.xml")
-}
-
-task checkstyleReport << {
-    description = 'Applies XML stylesheet to generated checkstyle*.xml files.'
-    if (file("$buildDir/reports/checkstyle/checkstyle.xml").exists()) {
-        ant.xslt(in: "$buildDir/reports/checkstyle/checkstyle.xml",
-                style:"$rootDir/config/checkstyle/checkstyle-noframes-sorted.xsl",
-                out:"$buildDir/reports/checkstyle/checkstyle.html"
-        )
-    }
-}
-
-gradle.taskGraph.afterTask {Task task, TaskState state ->
-    if(!checkFailOnError || state.failure) {
-        if (task.name in ['checkstyle']) {
-            checkstyleReport.execute()
-        }
-    }
 }
 
 check.dependsOn(checkstyle)
@@ -43,10 +21,12 @@ check.dependsOn(checkstyle)
 // https://github.com/gradleware/oreilly-gradle-book-examples/blob/master/ant-customtaskuse/build.gradle
 // http://gradle.1045684.n5.nabble.com/Trying-to-use-Checkstyle-getting-TreeWalker-error-td1435438.html
 
+import org.gradle.api.internal.project.IsolatedAntBuilder
 
 class AndroidCheckstyleTask extends DefaultTask {
 
     @InputFile @Optional File configFile = new File("$project.rootDir/config/checkstyle/checkstyle.xml")
+    @InputFile @Optional File xslFile = new File("$project.rootDir/config/checkstyle/checkstyle-noframes-sorted.xsl")
     @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/checkstyle/checkstyle.xml")
     @InputFiles FileCollection classpath
     Boolean ignoreFailures = false
@@ -73,6 +53,14 @@ class AndroidCheckstyleTask extends DefaultTask {
                 //formatter(type: 'plain', useFile: false)
                 formatter(type: 'xml', toFile: outputFile)
             }
+
+            if (outputFile.exists()) {
+                ant.xslt(in:   outputFile,
+                        style: xslFile,
+                        out:   outputFile.parent + "/checkstyle.html"
+                )
+            }
+
         }
     }
 }
