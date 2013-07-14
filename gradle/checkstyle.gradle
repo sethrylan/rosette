@@ -11,12 +11,15 @@ dependencies {
 }
 
 task checkstyle(type: AndroidCheckstyleTask) {
-    classpath = configurations.codequality
     ignoreFailures true
+    showViolations false
 }
 
 check.dependsOn(checkstyle)
 
+///////////////////////////////////////////////
+////////////// Groovy Task Class //////////////
+///////////////////////////////////////////////
 import org.gradle.api.internal.project.IsolatedAntBuilder
 
 class AndroidCheckstyleTask extends DefaultTask {
@@ -24,9 +27,9 @@ class AndroidCheckstyleTask extends DefaultTask {
     @InputFile @Optional File configFile = new File("$project.rootDir/config/checkstyle/checkstyle.xml")
     @InputFile @Optional File xslFile = new File("$project.rootDir/config/checkstyle/checkstyle-noframes-sorted.xsl")
     @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/checkstyle/checkstyle.xml")
-    @InputFiles FileCollection classpath
+    FileCollection classpath = project.configurations.codequality
     Boolean ignoreFailures = false
-    Boolean console = false
+    Boolean showViolations = true
     Project gradleProject = project
 
     @TaskAction
@@ -45,7 +48,7 @@ class AndroidCheckstyleTask extends DefaultTask {
                     }
                 }
 
-                if (console) {
+                if (showViolations) {
                     formatter(type: 'plain', useFile: false)
                 }
                 formatter(type: 'xml', toFile: outputFile)
@@ -57,7 +60,6 @@ class AndroidCheckstyleTask extends DefaultTask {
                         out:   outputFile.parent + "/checkstyle.html"
                 )
             }
-
         }
     }
 }
