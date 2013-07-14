@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ruleset name="Custom ruleset"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+    <description>
+        This ruleset provides some standard checks for Flume.
+    </description>
+    <rule ref="rulesets/logging-java.xml"/>
+    <rule ref="rulesets/unusedcode.xml"/>
+    <rule ref="rulesets/java/basic.xml"/>
+    <rule ref="rulesets/java/braces.xml"/>
+    <rule ref="rulesets/java/design.xml">
+        <exclude name="ImmutableField"/>
+        <exclude name="AvoidSynchronizedAtMethodLevel"/>
+        <exclude name="ClassWithOnlyPrivateConstructorsShouldBeFinal"/>
+        <exclude name="EmptyMethodInAbstractClassShouldBeAbstract"/>
+        <exclude name="UseSingleton"/>
+    </rule>
+    <rule ref="rulesets/java/imports.xml">
+        <exclude name="TooManyStaticImports"/>
+    </rule>
+    <rule ref="rulesets/java/junit.xml">
+        <exclude name="JUnitSpelling"/>
+        <exclude name="JUnitTestsShouldIncludeAssert"/>
+    </rule>
+    <rule ref="rulesets/java/strings.xml"/>
+
+</ruleset>

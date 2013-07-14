@@ -6,7 +6,7 @@ buildscript {
 
 apply plugin: 'android'
 apply from : "$rootDir/gradle/checkstyle.gradle"
-//apply from : "$rootDir/gradle/findbugs.gradle"
+apply from : "$rootDir/gradle/pmd.gradle"
 
 dependencies {
     compile files('libs/android-support-v4.jar')

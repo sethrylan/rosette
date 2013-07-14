@@ -1,0 +1,53 @@
+configurations {
+    codequality
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    codequality 'pmd:pmd:4.3'
+}
+
+task pmd(type: PmdTask) {
+    ignoreFailures true
+    showViolations false
+}
+
+check.dependsOn(pmd)
+
+///////////////////////////////////////////////
+////////////// Groovy Task Class //////////////
+///////////////////////////////////////////////
+import org.gradle.api.internal.project.IsolatedAntBuilder
+
+class PmdTask extends DefaultTask {
+    @InputFile @Optional File rulesetFile  = new File("config/pmd/pmd-basic-rules.xml")
+    @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/pmd/pmd.xml")
+    FileCollection pmdClasspath = project.configurations.codequality
+    Boolean ignoreFailures = false
+    Boolean showViolations = true
+    Project gradleProject = project
+
+    @TaskAction
+    def runPmd() {
+        outputFile.parentFile.mkdirs()
+        def antBuilder = services.get(IsolatedAntBuilder)
+        antBuilder.withClasspath(pmdClasspath).execute {
+            ant.taskdef(name: 'pmd', classname: 'net.sourceforge.pmd.ant.PMDTask')
+            ant.pmd(shortFilenames: 'true',
+                    failonruleviolation: !ignoreFailures,
+                    rulesetfiles: rulesetFile.toURI().toString()) {
+                formatter(type: 'xml', toFile: outputFile, toConsole: showViolations)
+                fileset(dir: gradleProject.projectDir.getPath()) {
+                    gradleProject.android.sourceSets.each { sourceSet ->
+                        sourceSet.java.each { file ->
+                            include(name: gradleProject.relativePath(file))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
