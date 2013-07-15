@@ -1,0 +1,54 @@
+configurations {
+    findbugs
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "com.google.code.findbugs:annotations:$versions.findbugs"
+    codequality "com.google.code.findbugs:findbugs-ant:$versions.findbugs"
+}
+
+task findbugs(dependsOn: assemble) << {
+    runFindbugs(true)
+}
+
+void runFindbugs(Boolean fail) {
+    ext.gradleProject = project
+    def outputFilePath = "$buildDir/findbugs"
+    new File(outputFilePath).mkdirs()
+    ant {
+        taskdef(name: 'findbugs', classname: 'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath: gradleProject.configurations.codequality.asPath)
+        findbugs(home: "$gradleProject.rootDir/libs/findbugs-2.0.0",
+                excludeFilter: "$gradleProject.rootDir/config/findbugs/exclude.xml",
+                output: 'xml',
+                outputFile: outputFilePath + '/findbugs.xml',
+                effort: 'max',
+                reportLevel: 'low',
+                failOnError: 'false',
+                debug: 'true',
+                warningsProperty: 'findbugs_warning',
+                errorProperty: 'findbugs_error') {
+            sourcePath(path: 'src/main/java')
+            "class"(location: "$gradleProject.buildDir/classes")
+        }
+    }
+
+    if (fail) {
+        if (ant.properties.findbugs_error || ant.properties.findbugs_warning) {
+            ant.fail("errors or warnings detected in findbugs")
+        }
+    }
+}
+
+
+
+
+
+// https://github.com/BeneStem/WicketCheesr/blob/daa74f0b7ca3ee0f47e1ab902a3c756553efa156/build.gradle
+// https://github.com/gradleware/oreilly-gradle-book-examples/blob/master/ant-customtaskuse/build.gradle
+// http://gradle.1045684.n5.nabble.com/Trying-to-use-Checkstyle-getting-TreeWalker-error-td1435438.html
+
+//https://github.com/apphance/Apphance-MobilE-Build-Automation/blob/9fa17bed9540c2e38152a26cb01a30303d4b2262/src/main/groovy/com/apphance/flow/plugins/android/analysis/tasks/FindBugsTask.groovy

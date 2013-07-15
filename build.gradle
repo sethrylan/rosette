@@ -3,6 +3,8 @@
 ext {
     githubProjectName = 'rosette'
     versions = [
+            findbugs: '2.0.0',
+            android: '0.5.0'
     ]
 }
 
