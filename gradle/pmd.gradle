@@ -22,6 +22,9 @@ check.dependsOn(pmd)
 ///////////////////////////////////////////////
 import org.gradle.api.internal.project.IsolatedAntBuilder
 
+/**
+ * See parameters at http://pmd.sourceforge.net/pmd-4.2.6/ant-task.html
+ */
 class PmdTask extends DefaultTask {
     @InputFile @Optional File rulesetFile  = new File("$project.rootDir/config/pmd/ruleset.xml")
     @InputFile @Optional File xslFile = new File("$project.rootDir/config/pmd/pmd-nicerhtml.xsl")
