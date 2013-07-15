@@ -25,7 +25,7 @@ import org.gradle.api.internal.project.IsolatedAntBuilder
 class AndroidCheckstyleTask extends DefaultTask {
     @InputFile @Optional File configFile = new File("$project.rootDir/config/checkstyle/checkstyle.xml")
     @InputFile @Optional File xslFile = new File("$project.rootDir/config/checkstyle/checkstyle-noframes-sorted.xsl")
-    @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/checkstyle/checkstyle.xml")
+    @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/checkstyle/checkstyle-${project.name}.xml")
     FileCollection checkstyleClasspath = project.configurations.codequality
     Boolean ignoreFailures = false
     Boolean showViolations = true
@@ -46,7 +46,6 @@ class AndroidCheckstyleTask extends DefaultTask {
                         }
                     }
                 }
-
                 if (showViolations) {
                     formatter(type: 'plain', useFile: false)
                 }
@@ -56,7 +55,7 @@ class AndroidCheckstyleTask extends DefaultTask {
             if (outputFile.exists()) {
                 ant.xslt(in:   outputFile,
                         style: xslFile,
-                        out:   outputFile.parent + "/checkstyle.html"
+                        out:   outputFile.absolutePath.replaceFirst(~/\.[^\.]+$/, ".html")
                 )
             }
         }
