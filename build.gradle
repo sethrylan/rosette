@@ -25,6 +25,7 @@ subprojects {
 
     afterEvaluate { project ->
         task sourcesJar(type: Jar, dependsOn: assemble) {
+            description '''Creates a *-sources.jar file from Android SourceSets'''
             from android.sourceSets*.allSource
             classifier 'sources'
             extension 'jar'
