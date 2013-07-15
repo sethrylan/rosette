@@ -10,7 +10,7 @@ dependencies {
     codequality 'pmd:pmd:4.2.6'
 }
 
-task pmd(type: PmdTask) {
+task pmd(type: AndroidPmdTask) {
     ignoreFailures true
     showViolations false
 }
@@ -25,7 +25,7 @@ import org.gradle.api.internal.project.IsolatedAntBuilder
 /**
  * See parameters at http://pmd.sourceforge.net/pmd-4.2.6/ant-task.html
  */
-class PmdTask extends DefaultTask {
+class AndroidPmdTask extends DefaultTask {
     @InputFile @Optional File rulesetFile  = new File("$project.rootDir/config/pmd/ruleset.xml")
     @InputFile @Optional File xslFile = new File("$project.rootDir/config/pmd/pmd-nicerhtml.xsl")
     @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/pmd/pmd-${project.name}.xml")
@@ -33,6 +33,11 @@ class PmdTask extends DefaultTask {
     Boolean ignoreFailures = false
     Boolean showViolations = true
     Project gradleProject = project
+
+    def AndroidPmdTask() {
+        description = 'Runs PMD against Android sourcesets.'
+        group = 'Code Quality'
+    }
 
     @TaskAction
     def runPmd() {
