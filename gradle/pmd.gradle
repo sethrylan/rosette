@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    codequality 'pmd:pmd:4.3'
+    codequality 'pmd:pmd:4.2.6'
 }
 
 task pmd(type: PmdTask) {
@@ -23,8 +23,9 @@ check.dependsOn(pmd)
 import org.gradle.api.internal.project.IsolatedAntBuilder
 
 class PmdTask extends DefaultTask {
-    @InputFile @Optional File rulesetFile  = new File("config/pmd/pmd-basic-rules.xml")
-    @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/pmd/pmd.xml")
+    @InputFile @Optional File rulesetFile  = new File("$project.rootDir/config/pmd/ruleset.xml")
+    @InputFile @Optional File xslFile = new File("$project.rootDir/config/pmd/pmd-nicerhtml.xsl")
+    @OutputFile @Optional File outputFile = new File("$project.buildDir/reports/pmd/pmd-${project.name}.xml")
     FileCollection pmdClasspath = project.configurations.codequality
     Boolean ignoreFailures = false
     Boolean showViolations = true
@@ -48,6 +49,9 @@ class PmdTask extends DefaultTask {
                     }
                 }
             }
+            ant.xslt(in: outputFile,
+                     style: xslFile,
+                     out: outputFile.absolutePath.replaceFirst(~/\.[^\.]+$/, ".html"))
         }
     }
 }
