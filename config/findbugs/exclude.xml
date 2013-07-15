@@ -7,44 +7,4 @@
         </Or>
         <Bug category="PERFORMANCE,MALICIOUS_CODE,STYLE,SECURITY,CORRECTNESS,MT_CORRECTNESS,BAD_PRACTICE,I18N" />
     </Match>
-    <Match>
-        <Or>
-            <Class name="~de\.otto\.shopoffice\.api\..*"/>
-            <Class name="~de\.otto\.shopoffice\.ui\..*"/>
-            <Class name="~de\.otto\.shopoffice\.business\..*\.*DisplayBean"/>
-        </Or>
-        <Or>
-            <Field type="java.util.Map"/>
-            <Field type="java.util.List"/>
-            <Field name="~.*Service"/>
-            <Field name="~.*propertyProvider"/>
-            <Field name="~.*rightChecker"/>
-            <Field name="~.*DAO"/>
-            <class name="~.*PropertyProvider"/>
-            <class name="~.*RightChecker"/>
-            <class name="~.*DAO"/>
-        </Or>
-        <Bug code="Se"/>
-    </Match>
-    <Match>
-        <Bug pattern="NM_CONFUSING" />
-    </Match>
-    <Match>
-        <Bug code="SnVI" />
-    </Match>
-    <Match>
-        <Bug pattern="DM_CONVERT_CASE" />
-    </Match>
-    <Match>
-        <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
-    </Match>
-    <Match>
-        <Bug pattern="SF_SWITCH_NO_DEFAULT" />
-    </Match>
-    <Match>
-        <Bug pattern="USM_USELESS_SUBCLASS_METHOD" />
-    </Match>
-    <Match>
-        <Bug pattern="SE_INNER_CLASS" />
-    </Match>
 </FindBugsFilter>

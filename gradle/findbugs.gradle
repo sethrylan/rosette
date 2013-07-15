@@ -1,5 +1,6 @@
 configurations {
     findbugs
+    findbugsPlugins
 }
 
 repositories {
@@ -8,47 +9,81 @@ repositories {
 
 dependencies {
     compile "com.google.code.findbugs:annotations:$versions.findbugs"
-    codequality "com.google.code.findbugs:findbugs-ant:$versions.findbugs"
+    findbugs "com.google.code.findbugs:findbugs-ant:$versions.findbugs"
 }
 
-task findbugs(dependsOn: assemble) << {
-    runFindbugs(true)
+task findbugs(type: AndroidFindBugsTask) {
+    ignoreFailures true
+    xslFile = new File("$project.rootDir/config/findbugs/fancy.xsl")
 }
 
-void runFindbugs(Boolean fail) {
-    ext.gradleProject = project
-    def outputFilePath = "$buildDir/findbugs"
-    new File(outputFilePath).mkdirs()
-    ant {
-        taskdef(name: 'findbugs', classname: 'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath: gradleProject.configurations.codequality.asPath)
-        findbugs(home: "$gradleProject.rootDir/libs/findbugs-2.0.0",
-                excludeFilter: "$gradleProject.rootDir/config/findbugs/exclude.xml",
-                output: 'xml',
-                outputFile: outputFilePath + '/findbugs.xml',
-                effort: 'max',
-                reportLevel: 'low',
-                failOnError: 'false',
-                debug: 'true',
-                warningsProperty: 'findbugs_warning',
-                errorProperty: 'findbugs_error') {
-            sourcePath(path: 'src/main/java')
-            "class"(location: "$gradleProject.buildDir/classes")
-        }
+///////////////////////////////////////////////
+////////////// Groovy Task Class //////////////
+///////////////////////////////////////////////
+import org.gradle.api.internal.project.IsolatedAntBuilder
+
+/**
+ * See parameters at http://findbugs.sourceforge.net/manual/anttask.html
+ */
+class AndroidFindBugsTask extends DefaultTask {
+    @InputFile @Optional File excludeFile = new File("$project.rootDir/config/findbugs/exclude.xml")
+    @InputFile @Optional File xslFile = new File("$project.rootDir/config/findbugs/default.xsl")
+    @OutputFile File outputFile = new File("$project.buildDir/reports/findbugs/findbugs-${project.name}.xml")
+    FileCollection findbugsClasspath = project.configurations.findbugs
+    FileCollection pluginClasspath = project.configurations.findbugsPlugins
+    Boolean ignoreFailures = false
+    Project gradleProject = project
+    String errorProp = 'findbugsError'
+    String warningsProp = 'findbugsWarnings'
+
+    def AndroidFindBugsTask() {
+        description = 'Runs FindBugs against Android sourcesets.'
+        group = 'Code Quality'
+        dependsOn 'assemble'
+        dependsOn 'assembleTest'
+        dependsOn 'assembleDebug'
     }
 
-    if (fail) {
-        if (ant.properties.findbugs_error || ant.properties.findbugs_warning) {
-            ant.fail("errors or warnings detected in findbugs")
+    @TaskAction
+    def findBugs() {
+        outputFile.parentFile.mkdirs()
+        def antBuilder = services.get(IsolatedAntBuilder)
+        antBuilder.withClasspath(findbugsClasspath).execute {
+            ant.taskdef(name: 'findbugs', classname: 'edu.umd.cs.findbugs.anttask.FindBugsTask')
+            ant.findbugs(debug: 'true',
+                        errorProperty: errorProp,
+                        warningsProperty: warningsProp,
+                        output: 'xml:withMessages',
+                        outputFile: outputFile,
+                        jvmargs: '-Xmx768M') {
+                findbugsClasspath.addToAntBuilder(ant, 'classpath')
+                pluginClasspath.addToAntBuilder(ant, 'pluginList')
+                auxclassPath(path: gradleProject.configurations.compile.asPath)
+                gradleProject.android.sourceSets*.java.srcDirs.each { srcDir ->
+                    sourcePath(path: srcDir)
+                }
+                "class"(location: "$gradleProject.buildDir/classes")
+            }
+
+            if (ant.project.properties[errorProp]) {
+                throw new GradleException("FindBugs encountered an error. Run with --debug to get more information.")
+            }
+
+            if (ant.project.properties[warningsProp] && !ignoreFailures) {
+                if (outputFile) {
+                    throw new GradleException("FindBugs rule violations were found. See the report at ${outputFile}.")
+                } else {
+                    throw new GradleException("FindBugs rule violations were found.")
+                }
+            }
+
+            if (outputFile.exists()) {
+                ant.xslt(in:   outputFile,
+                        style: xslFile,
+                        out:   outputFile.absolutePath.replaceFirst(~/\.[^\.]+$/, ".html")
+                )
+            }
+
         }
     }
 }
-
-
-
-
-
-// https://github.com/BeneStem/WicketCheesr/blob/daa74f0b7ca3ee0f47e1ab902a3c756553efa156/build.gradle
-// https://github.com/gradleware/oreilly-gradle-book-examples/blob/master/ant-customtaskuse/build.gradle
-// http://gradle.1045684.n5.nabble.com/Trying-to-use-Checkstyle-getting-TreeWalker-error-td1435438.html
-
-//https://github.com/apphance/Apphance-MobilE-Build-Automation/blob/9fa17bed9540c2e38152a26cb01a30303d4b2262/src/main/groovy/com/apphance/flow/plugins/android/analysis/tasks/FindBugsTask.groovy

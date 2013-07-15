@@ -21,8 +21,4 @@ android {
         minSdkVersion 12
         targetSdkVersion 16
     }
-
-//    sourceSets {
-//        main.setRoot('src/main')
-//    }
 }
