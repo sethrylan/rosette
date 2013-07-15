@@ -55,6 +55,7 @@ class AndroidFindBugsTask extends DefaultTask {
                         warningsProperty: warningsProp,
                         output: 'xml:withMessages',
                         outputFile: outputFile,
+                        excludeFilter: excludeFile,
                         jvmargs: '-Xmx768M') {
                 findbugsClasspath.addToAntBuilder(ant, 'classpath')
                 pluginClasspath.addToAntBuilder(ant, 'pluginList')
