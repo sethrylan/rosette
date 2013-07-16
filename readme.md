@@ -1,15 +1,21 @@
 ### Rosette ###
 
+Android Graphics Demonstration
 
-# Install#
+# Install #
 
 Update local.properties to point to Android SDK install location.
 
-''' gradlew installDebug '''
+```gradlew installDebug```
 
 # Uninstall #
 
-''' gradlew uninstallDebug '''
+```gradlew uninstallDebug```
+
+# Code Quality Checks #
+
+```gradlew findbugs```
+```gradlew check``` (PMD, Checkstyle)
 
 # License #
 
