@@ -15,6 +15,7 @@ Update local.properties to point to Android SDK install location.
 # Code Quality Checks #
 
 ```gradlew findbugs```
+
 ```gradlew check``` (PMD, Checkstyle)
 
 # License #
